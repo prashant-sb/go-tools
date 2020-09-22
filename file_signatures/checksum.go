@@ -9,8 +9,11 @@ import (
 	"os"
 )
 
+// Polynomial seed for CRC calculation.
 const polynomial = 0xedb88320
 
+// Calculates md5sum of file.
+// returns checksum or error
 func FileMd5Sum(filePath string) (string, error) {
 	var md5sum string
 
@@ -31,6 +34,8 @@ func FileMd5Sum(filePath string) (string, error) {
 	return md5sum, nil
 }
 
+// Calculates sha256 of file.
+// returns checksum or error
 func FileSha256(filePath string) (string, error) {
 	var shaCheckSum string
 
@@ -50,6 +55,9 @@ func FileSha256(filePath string) (string, error) {
 	return shaCheckSum, nil
 }
 
+
+// Calculates the CRC of file, returns
+// checksum or error
 func FileCrc32(filePath string) (string, error) {
 	var crcCheckSum string
 

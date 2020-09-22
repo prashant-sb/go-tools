@@ -1,8 +1,6 @@
 package main
 
-// Tool iterates all files in given directory abd calculates
-// given checksum.
-//
+// CLI to calculate checksum of all files in given directory
 
 import (
 	"errors"
@@ -12,10 +10,18 @@ import (
 	"path/filepath"
 )
 
+//
+//  Options for CLI
+//      dest: Destination dir / tmp will be default
+//      sign: Checksum algorithm / md5 will be default
+//
 var (
 	dest = flag.String("dest", "/tmp", "root direcory for calculate file hashes")
 	sign = flag.String("sign", "md5", "Hashing algorithm")
 )
+
+// Worker thread for calculating checksum of file
+// depending on algorithm provided by user
 
 func checksumWorker(filePath string) error {
 	var filehash func(filePath string) (string, error)
@@ -45,6 +51,8 @@ func checksumWorker(filePath string) error {
 	fmt.Printf("%s :: %s\n", filePath, cs)
 	return nil
 }
+
+// Callback for walking destination directory
 
 func walkWith(path string, info os.FileInfo, err error) error {
 	if info.IsDir() {
