@@ -1,22 +1,29 @@
 package main
 
-import "flag"
+import (
+	"flag"
+
+	log "github.com/golang/glog"
+)
 
 var (
-	list = flag.String("list", false, "List running processes")
-	wpid = flag.String("watch", "", "watch process by pid for events")
+	list = flag.Bool("list", false, "List running processes")
+	wpid = flag.Uint64("watch", 0, "watch process by pid for events")
 )
 
 func main() {
 	flag.Parse()
 
-	pitr = NewProcIterator()
+	procIter := NewProcIterator()
+
 	if *list == true {
-		pitr.List()
+		log.Info("Listing processes ")
+		if err := procIter.List(); err != nil {
+			log.Error("Error : ", err.Error())
+		}
 	}
 
-	if *wpid != nil {
-		pitr.Watch(pid)
+	if *wpid != 0 {
+		procIter.Watch(*wpid)
 	}
-
 }
