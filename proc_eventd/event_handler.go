@@ -1,10 +1,14 @@
 package main
+
 import (
-	"golang.org/x/sys/unix"
 	log "github.com/golang/glog"
 )
 
 type Events struct {
+	all uint32
+	exec uint32
+	fork uint32
+	exit uint32
 }
 
 type EventHandler interface {
@@ -12,7 +16,13 @@ type EventHandler interface {
 }
 
 func NewEvent() (*Events, error) {
-	e := Events{}
+	e := Events{
+		all: PROC_EVENT_ALL,
+		exec: PROC_EVENT_EXEC,
+		fork: PROC_EVENT_FORK,
+		exit: PROC_EVENT_EXIT,
+	}
+
 	return &e, nil
 }
 
@@ -22,14 +32,37 @@ func NewEventHandler() (EventHandler, error) {
 
 func (e *Events) Notify(pid uint64) error {
 
-	nlSock, err := unix.Socket(unix.AF_NETLINK, unix.SOCK_DGRAM, unix.AF_INET)
-	if err != nil {
-		log.Error("Error on creating the socket: %v", err)
+	notif, err := NewWatcher()
+	defer notif.Close()
+	done := make(chan bool)
+
+    if err != nil {
+		log.Error("Error occured in creating process watcher: ", err.Error())
 		return err
 	}
-	log.Info("Socket opened .. ")
 
-	unix.Close(nlSock)
+	err = notif.Watch(pid, e.all)
+	if err != nil {
+		return err
+	}
+
+	// Process events 
+	log.Info("Watching pid: ", pid)
+    go func() {
+        for {
+            select {
+            case ev := <-notif.Fork:
+                log.Info("Fork event:", *ev)
+            case ev := <-notif.Exec:
+                log.Info("Exec event:", *ev)
+            case ev := <-notif.Exit:
+                log.Info("Exit event:", *ev)
+            case err := <-notif.Error:
+            	log.Info("Error:", err)
+            }
+        }
+    }()
+	<-done
 
 	return nil
 }
