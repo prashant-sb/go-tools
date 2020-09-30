@@ -9,24 +9,30 @@ import (
 	log "github.com/golang/glog"
 )
 
+// Process data structures parsed from /proc
 const (
 	PROCDIR    = "/proc/"
 	PROCSTATUS = PROCDIR + "*/status"
 )
 
+// Iterator interface to list and watch process
 type ProcIter interface {
 	List() error
 	Watch(pid uint64) error
 }
 
+// Process attribute map
+// with fields specified as key
 type ProcMeta struct {
 	procAttrs map[string]string
 }
 
+// Process map of pid and Process Attribute values
 type ProcEntry struct {
 	procMap map[string]*ProcMeta
 }
 
+// Init Iterator interface
 func NewProcIterator() ProcIter {
 
 	return &ProcEntry{
@@ -34,6 +40,8 @@ func NewProcIterator() ProcIter {
 	}
 }
 
+// Fields that are listable.
+// Initialize Process attribute map with empty values
 func getProcMeta() ProcMeta {
 	pmeta := make(map[string]string)
 
@@ -54,12 +62,18 @@ func getProcMeta() ProcMeta {
 	}
 }
 
+// Stub to init ProcEntry
 func initProcMap() map[string]*ProcMeta {
 	pentry := make(map[string]*ProcMeta)
 
 	return pentry
 }
 
+// Contructs the map with fields from Process Attributes
+// and saves with key as Pid with ProcEntry.
+// TODO: Add ProcessAttr processing to diffrent method
+// so that, it could be useful for getting details for process
+// with given Pid
 func (pi *ProcEntry) constructProcMap() error {
 
 	pmap := make(map[string]*ProcMeta)
@@ -95,6 +109,7 @@ func (pi *ProcEntry) constructProcMap() error {
 	return nil
 }
 
+// contruct and returns the process map at the instance.
 func (pi *ProcEntry) getProcMap() (map[string]*ProcMeta, error) {
 
 	if err := pi.constructProcMap(); err != nil {
@@ -103,6 +118,7 @@ func (pi *ProcEntry) getProcMap() (map[string]*ProcMeta, error) {
 	return pi.procMap, nil
 }
 
+// Init and calls the process watcher 
 func (pi *ProcEntry) Watch(pid uint64) error {
 
 	eh, err := NewEventHandler()
@@ -117,6 +133,7 @@ func (pi *ProcEntry) Watch(pid uint64) error {
 	return nil
 }
 
+// List the details of process map
 func (pi *ProcEntry) List() error {
 	pmap, err := pi.getProcMap()
 	if err != nil {

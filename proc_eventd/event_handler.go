@@ -4,6 +4,7 @@ import (
 	log "github.com/golang/glog"
 )
 
+// Watchable events
 type Events struct {
 	all uint32
 	exec uint32
@@ -11,10 +12,12 @@ type Events struct {
 	exit uint32
 }
 
+// User level interface for events
 type EventHandler interface {
 	Notify(uint64) error
 }
 
+// Initialize event 
 func NewEvent() (*Events, error) {
 	e := Events{
 		all: PROC_EVENT_ALL,
@@ -26,10 +29,14 @@ func NewEvent() (*Events, error) {
 	return &e, nil
 }
 
+// Returns interface binded with Event type
 func NewEventHandler() (EventHandler, error) {
 	return NewEvent()
 }
 
+// Create and watch for given pid.
+// Waits till exit.
+// TODO: Add methods for subscriptions for Events
 func (e *Events) Notify(pid uint64) error {
 
 	notif, err := NewWatcher()
