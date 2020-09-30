@@ -237,3 +237,4 @@ func (listener *netlinkListener) send(op uint32) error {
 
 	return syscall.Sendto(listener.sock, buf.Bytes(), 0, listener.addr)
 }
+
