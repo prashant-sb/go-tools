@@ -1,83 +1,69 @@
 package main
 
 import (
-	"os"
 	"errors"
-	hw "github.com/jaypipes/ghw"
 	log "github.com/golang/glog"
+	hw "github.com/jaypipes/ghw"
+	"os"
 )
 
-type sysinfo struct{
-	Cpu		hw.CPUInfo 
-	Bios	hw.BIOSInfo
-	Memory	hw.MemoryInfo
+// Defines the system details
+type sysinfo struct {
+	CPU     hw.CPUInfo
+	Bios    hw.BIOSInfo
+	Memory  hw.MemoryInfo
 	Storage hw.BlockInfo
 	Network hw.NetworkInfo
 }
 
+// Informer : interface for sysinfo
+type Informer interface {
+	String(string) (string, error)
+	FmtOption() filefmt
+}
+
+// File formatting options
 type fileopt struct {
-	info	 *sysinfo
+	info     *sysinfo
 	fileType string
 	filePath string
 }
 
-type filefmt interface{
+// Interface for fileopt
+type filefmt interface {
 	get() (string, error)
 	To(string) error
 	FormatAs(string)
 }
 
-type informer interface{
-	String(string) (string, error)
-	FmtOption() filefmt
-}
-
-func NewInformer() (informer, error) {
+// NewInformer returns interface binding to sysinfo
+func NewInformer() (Informer, error) {
 	sysinfo, err := collectSysinfo()
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return sysinfo, nil
 }
 
-func (s *sysinfo) String(ft string) (string, error){
-	var tostr string
-
-	switch	{
-	case ft == "json":
-		tostr = s.Cpu.JSONString(true) + 
-			s.Bios.JSONString(true)	+
-			s.Memory.JSONString(true) +	
-			s.Storage.JSONString(true) +
-			s.Network.JSONString(true)
-	
-	case ft == "yaml":
-		tostr = s.Cpu.YAMLString() + 
-			s.Bios.YAMLString()	+
-			s.Memory.YAMLString() +	
-			s.Storage.YAMLString() +
-			s.Network.YAMLString()
-	default:
-		return tostr, errors.New("Type not supported")
-	}
-
-	return tostr, nil
-}
-
+// FmtOption binds filefmt interface to
+// file formatting options
 func (s *sysinfo) FmtOption() filefmt {
 	ft := fileopt{
 		filePath: "sysinfo.json",
 		fileType: "json",
-		info: s,
+		info:     s,
 	}
 	return &ft
 }
 
+// FormatAs sets the formatting type on option
 func (opt *fileopt) FormatAs(ftype string) {
 	opt.fileType = ftype
 }
 
+// get is filefmt interface method,
+// formats sysinfo based on option
 func (opt *fileopt) get() (string, error) {
 	sinfo := opt.info
 	ft := opt.fileType
@@ -86,14 +72,16 @@ func (opt *fileopt) get() (string, error) {
 	if err != nil {
 		return ftstr, err
 	}
-	
+
 	return ftstr, nil
 }
 
+// To saves the formatted output to
+// given file.
 func (opt *fileopt) To(file string) error {
 	var info string
 	var err error
-		
+
 	info, err = opt.get()
 	if err != nil {
 		return err
@@ -112,8 +100,34 @@ func (opt *fileopt) To(file string) error {
 	return nil
 }
 
+// Stringer for sysinfo, supports yaml | json
+func (s *sysinfo) String(ft string) (string, error) {
+	var tostr string
+
+	switch {
+	case ft == "json":
+		tostr = s.CPU.JSONString(true) +
+			s.Bios.JSONString(true) +
+			s.Memory.JSONString(true) +
+			s.Storage.JSONString(true) +
+			s.Network.JSONString(true)
+
+	case ft == "yaml":
+		tostr = s.CPU.YAMLString() +
+			s.Bios.YAMLString() +
+			s.Memory.YAMLString() +
+			s.Storage.YAMLString() +
+			s.Network.YAMLString()
+	default:
+		return tostr, errors.New("Type not supported")
+	}
+
+	return tostr, nil
+}
+
+// collectSysinfo prepares the sysinfo
 func collectSysinfo() (*sysinfo, error) {
-	sinfo := sysinfo{}	
+	sinfo := sysinfo{}
 
 	Mem, err := hw.Memory()
 	if err != nil {
@@ -122,12 +136,12 @@ func collectSysinfo() (*sysinfo, error) {
 	}
 	sinfo.Memory = *Mem
 
-	Cpu, err := hw.CPU()
+	CPU, err := hw.CPU()
 	if err != nil {
-		log.Info("Error in collecting Cpu info: ", err.Error())
+		log.Info("Error in collecting CPU info: ", err.Error())
 		return nil, err
 	}
-	sinfo.Cpu = *Cpu
+	sinfo.CPU = *CPU
 
 	Bios, err := hw.BIOS()
 	if err != nil {
