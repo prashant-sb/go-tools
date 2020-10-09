@@ -1,4 +1,4 @@
-package main
+package proc
 
 import (
 	log "github.com/golang/glog"
