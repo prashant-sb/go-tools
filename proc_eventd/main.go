@@ -4,6 +4,7 @@ import (
 	"flag"
 
 	log "github.com/golang/glog"
+	prc "github.com/prashant-sb/go-utils/proc_eventd/proc"
 )
 
 var (
@@ -14,7 +15,7 @@ var (
 func main() {
 	flag.Parse()
 
-	procIter := NewProcIterator()
+	procIter := prc.NewProcIterator()
 
 	if *list == true {
 		log.Info("Listing processes ")

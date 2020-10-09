@@ -1,4 +1,4 @@
-package main
+package proc
 
 import (
 	"fmt"
@@ -36,7 +36,7 @@ type ProcEntry struct {
 func NewProcIterator() ProcIter {
 
 	return &ProcEntry{
-		procMap: initProcMap(),
+		procMap: InitProcMap(),
 	}
 }
 
@@ -63,7 +63,7 @@ func getProcMeta() ProcMeta {
 }
 
 // Stub to init ProcEntry
-func initProcMap() map[string]*ProcMeta {
+func InitProcMap() map[string]*ProcMeta {
 	pentry := make(map[string]*ProcMeta)
 
 	return pentry
@@ -118,7 +118,7 @@ func (pi *ProcEntry) getProcMap() (map[string]*ProcMeta, error) {
 	return pi.procMap, nil
 }
 
-// Init and calls the process watcher 
+// Init and calls the process watcher
 func (pi *ProcEntry) Watch(pid uint64) error {
 
 	eh, err := NewEventHandler()
