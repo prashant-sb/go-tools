@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+    hasher "github.com/prashant-sb/go-utils/file_signatures/hash"
 )
 
 //
@@ -29,13 +30,13 @@ func checksumWorker(filePath string) error {
 	switch *sign {
 
 	case "crc":
-		filehash = FileCrc32
+		filehash = hasher.FileCrc32
 
 	case "md5":
-		filehash = FileMd5Sum
+		filehash = hasher.FileMd5Sum
 
 	case "sha256":
-		filehash = FileSha256
+		filehash = hasher.FileSha256
 
 	default:
 		err := errors.New("Algorithm not supported.")
