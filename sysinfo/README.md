@@ -1,4 +1,4 @@
-##### Collect system information #####
+### Collects system information ###
 ----
 Utility collects system information about following components
 
