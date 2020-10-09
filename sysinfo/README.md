@@ -1,4 +1,4 @@
-### Collects system information ###
+### Collects system information
 ----
 Utility collects system information about following components
 
@@ -9,7 +9,7 @@ Utility collects system information about following components
 - Network Interface
 
 ----
-##### Options #####
+##### Options
 ```
 Usage of ./run:
   -alsologtostderr
@@ -46,6 +46,6 @@ Usage of ./run:
 
 - References
 
-    Utility based upon implementation github.com/jaypipes/ghw
+    Utility based upon implementation of https://github.com/jaypipes/ghw
 
 ----
