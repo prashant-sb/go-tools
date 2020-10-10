@@ -1,4 +1,4 @@
-## Display or Create Users in Linux
+## User operations in Linux
 
 Display linux user information or create / delete user.
 
