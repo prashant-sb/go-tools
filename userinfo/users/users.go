@@ -84,7 +84,7 @@ func NewUserList() UserListOps {
 	}
 }
 
-// Functions that binds to UsreList interface
+// Functions that binds to UserList interface
 
 // Get the userlist of all users
 func (ul *UserList) Get() (*UserList, error) {
