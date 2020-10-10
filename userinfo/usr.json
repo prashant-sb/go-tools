@@ -1,0 +1,8 @@
+{
+   "uid": "0",
+   "gid": "0",
+   "userName": "test",
+   "groupName": "syslog",
+   "name": "Test User",
+   "homeDir": "/home/test"
+}
