@@ -17,10 +17,10 @@ import (
 )
 
 const (
-	userDB    string = "/etc/passwd"
-	userShell string = "/bin/bash"
-	userAdd   string = "useradd"
-	userDel   string = "userdel"
+	userDB    string = "/etc/passwd" // User parser file in linux
+	userShell string = "/bin/bash"   // Default user shell
+	userAdd   string = "useradd"     // Command for adding user
+	userDel   string = "userdel"     // Command for deleting user
 )
 
 type Userinfo struct {
@@ -46,56 +46,47 @@ type Userinfo struct {
 }
 
 type UserList struct {
+	// Userinfo lists for all system users
 	Users []Userinfo `json:"users"`
 }
 
 type UserOps interface {
+
+	// Exported methods for Userinfo
 	Get(string) (*Userinfo, error)
 	AddUser(string) (string, error)
 	DeleteUser(string) (string, error)
 
+	// Private methods for Userinfo
 	add(*Userinfo) error
 	delete(*Userinfo) error
 	creadential() (string, error)
 	readUsers(string) ([]byte, error)
 }
 
+// UserListOps interface provides
+// list of all system users by parsing
+// Linux password file.
 type UserListOps interface {
 	Get() (*UserList, error)
 	readEtcPasswd(string) ([]string, error)
 }
 
+// NewUserOps inits the interface for Userinfo
 func NewUserOps() UserOps {
 	return &Userinfo{}
 }
 
+// NewUserList inits the interface for UserList
 func NewUserList() UserListOps {
 	return &UserList{
 		Users: []Userinfo{},
 	}
 }
 
-func (u *Userinfo) Get(userName string) (*Userinfo, error) {
+// Functions that binds to UsreList interface
 
-	ui, err := user.Lookup(userName)
-	if err != nil {
-		return nil, err
-	}
-	g, err := user.LookupGroupId(ui.Gid)
-	if err != nil {
-		return nil, err
-	}
-
-	return &Userinfo{
-		Uid:       ui.Uid,
-		Gid:       ui.Gid,
-		Name:      ui.Name,
-		HomeDir:   ui.HomeDir,
-		Username:  ui.Username,
-		Groupname: g.Name,
-	}, nil
-}
-
+// Get the userlist of all users
 func (ul *UserList) Get() (*UserList, error) {
 
 	var userlist []Userinfo
@@ -131,41 +122,51 @@ func (ul *UserList) Get() (*UserList, error) {
 	}, nil
 }
 
-func (u *Userinfo) creadential() (string, error) {
+// Read file /etc/passwd and return slice of users
+func (ul *UserList) readEtcPasswd(f string) ([]string, error) {
+	var ulist []string
 
-	fmt.Printf("Enter Password for %s: ", u.Username)
-	bytePassword, err := terminal.ReadPassword(int(syscall.Stdin))
+	file, err := os.Open(f)
 	if err != nil {
-		return "", err
+		return ulist, err
 	}
-	password := string(bytePassword)
-	fmt.Println()
+	defer file.Close()
 
-	return strings.TrimSpace(password), nil
+	r := bufio.NewScanner(file)
+
+	for r.Scan() {
+		lines := r.Text()
+		parts := strings.Split(lines, ":")
+		ulist = append(ulist, parts[0])
+	}
+	return ulist, nil
 }
 
-func (u *Userinfo) add(uinfo *Userinfo) error {
+// Functions that binds to Userinfo interface
 
-	if _, err := u.Get(uinfo.Username); err == nil {
-		return errors.New("User " + uinfo.Username + " already added.")
-	}
+// Get user schema with username
+func (u *Userinfo) Get(userName string) (*Userinfo, error) {
 
-	u.Username = uinfo.Username
-	passwd, err := u.creadential()
+	ui, err := user.Lookup(userName)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	argUser := []string{"-m", "-d", uinfo.HomeDir, "-G", uinfo.Groupname, "-s", userShell, uinfo.Username, "-p", passwd}
-	userCmd := exec.Command(userAdd, argUser...)
-
-	if _, err := userCmd.Output(); err != nil {
-		log.Error("Error in adding user : ", u.Username, " ", err.Error())
-		return err
+	g, err := user.LookupGroupId(ui.Gid)
+	if err != nil {
+		return nil, err
 	}
 
-	return nil
+	return &Userinfo{
+		Uid:       ui.Uid,
+		Gid:       ui.Gid,
+		Name:      ui.Name,
+		HomeDir:   ui.HomeDir,
+		Username:  ui.Username,
+		Groupname: g.Name,
+	}, nil
 }
 
+// AddUser adds the system user with provided schema
 func (u *Userinfo) AddUser(usrJsonFile string) (string, error) {
 
 	var usr string
@@ -192,19 +193,7 @@ func (u *Userinfo) AddUser(usrJsonFile string) (string, error) {
 	return usr, nil
 }
 
-func (u *Userinfo) delete(uinfo *Userinfo) error {
-
-	argUser := []string{"-r", uinfo.Username}
-	userCmd := exec.Command(userDel, argUser...)
-
-	if _, err := userCmd.Output(); err != nil {
-		log.Error("Error in deleting user : ", uinfo.Username, "-", err.Error())
-		return err
-	}
-
-	return nil
-}
-
+// DeleteUser gets the schema for user by name, deletes it if available.
 func (u *Userinfo) DeleteUser(userName string) (string, error) {
 
 	uinfo, err := u.Get(userName)
@@ -219,16 +208,55 @@ func (u *Userinfo) DeleteUser(userName string) (string, error) {
 	return uinfo.Username, nil
 }
 
-func Decode(e interface{}) (string, error) {
+// Get the password from stdin for user
+func (u *Userinfo) creadential() (string, error) {
 
-	var usersJson []byte
-
-	usersJson, err := json.MarshalIndent(e, "", "   ")
+	fmt.Printf("Enter Password for %s: ", u.Username)
+	bytePassword, err := terminal.ReadPassword(int(syscall.Stdin))
 	if err != nil {
-		return string(usersJson), err
+		return "", err
+	}
+	password := string(bytePassword)
+	fmt.Println()
+
+	return strings.TrimSpace(password), nil
+}
+
+// add user from Userinfo, if new user
+func (u *Userinfo) add(uinfo *Userinfo) error {
+
+	if _, err := u.Get(uinfo.Username); err == nil {
+		return errors.New("User " + uinfo.Username + " already added.")
 	}
 
-	return string(usersJson), nil
+	u.Username = uinfo.Username
+	passwd, err := u.creadential()
+	if err != nil {
+		return err
+	}
+	argUser := []string{"-m", "-d", uinfo.HomeDir, "-G", uinfo.Groupname, "-s", userShell, uinfo.Username, "-p", passwd}
+	userCmd := exec.Command(userAdd, argUser...)
+
+	if _, err := userCmd.Output(); err != nil {
+		log.Error("Error in adding user : ", u.Username, " ", err.Error())
+		return err
+	}
+
+	return nil
+}
+
+// deletes provided Userinfo from system
+func (u *Userinfo) delete(uinfo *Userinfo) error {
+
+	argUser := []string{"-r", uinfo.Username}
+	userCmd := exec.Command(userDel, argUser...)
+
+	if _, err := userCmd.Output(); err != nil {
+		log.Error("Error in deleting user : ", uinfo.Username, "-", err.Error())
+		return err
+	}
+
+	return nil
 }
 
 // Read json file and return slice of byte.
@@ -245,22 +273,15 @@ func (u *Userinfo) readUsers(f string) ([]byte, error) {
 	return data, nil
 }
 
-// Read file /etc/passwd and return slice of users
-func (ul *UserList) readEtcPasswd(f string) ([]string, error) {
-	var ulist []string
+// Decodes the json from embeded interface to indented string
+func Decode(e interface{}) (string, error) {
 
-	file, err := os.Open(f)
+	var usersJson []byte
+
+	usersJson, err := json.MarshalIndent(e, "", "   ")
 	if err != nil {
-		return ulist, err
+		return string(usersJson), err
 	}
-	defer file.Close()
 
-	r := bufio.NewScanner(file)
-
-	for r.Scan() {
-		lines := r.Text()
-		parts := strings.Split(lines, ":")
-		ulist = append(ulist, parts[0])
-	}
-	return ulist, nil
+	return string(usersJson), nil
 }

@@ -8,6 +8,12 @@ import (
 	uinfo "github.com/prashant-sb/go-utils/userinfo/users"
 )
 
+// CLI Flags:
+//
+// -list -user <username>   : List specific user schema
+// -list                    : List all system users
+// -create -from <json>	    : Create user from given json schema file
+// -delete -user <username> : Deletes user by username
 var (
 	list   = flag.Bool("list", false, "Lists the system users")
 	create = flag.Bool("create", false, "Creates the system user")
@@ -59,6 +65,7 @@ func main() {
 		break
 
 	case *create:
+		// Add user from json User Schema
 		if *from != "" {
 			ui := uinfo.NewUserOps()
 			userName, err := ui.AddUser(*from)
@@ -71,6 +78,7 @@ func main() {
 		break
 
 	case *delete:
+		// Deletes user by Username
 		if *user != "" {
 			ui := uinfo.NewUserOps()
 			if _, err := ui.DeleteUser(*user); err != nil {
@@ -78,9 +86,11 @@ func main() {
 				return
 			}
 			fmt.Printf("%s user deleted.\n", *user)
-			break
 		}
+		break
+
 	default:
+		// Prints usage in all other cases.
 		flag.Usage()
 	}
 }
