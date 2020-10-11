@@ -1,3 +1,5 @@
+
+![Go](https://github.com/prashant-sb/go-utils/workflows/Go/badge.svg)
 # go-utils
 ----
 Collection of CLIs for common system tasks.
