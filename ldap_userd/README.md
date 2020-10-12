@@ -6,16 +6,17 @@ Display ldap user information or create / delete user.
 
 ```
 ```
-#### Add new user
-
-```
-```
 #### User information
 
 ```
 ```
 
 #### List all users
+```
+```
+
+#### Add new user
+
 ```
 ```
 
