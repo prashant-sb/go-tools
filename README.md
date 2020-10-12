@@ -10,3 +10,4 @@ Collection of CLIs for common system tasks.
 - [Process Event handler](https://github.com/prashant-sb/go-utils/tree/master/proc_eventd) <br />
 - [Collect system information](https://github.com/prashant-sb/go-utils/tree/master/sysinfo) <br />
 - [Manage system users](https://github.com/prashant-sb/go-utils/tree/master/userinfo)
+- [Manage Ldap users](https://github.com/prashant-sb/go-utils/tree/master/ldap_userd)
