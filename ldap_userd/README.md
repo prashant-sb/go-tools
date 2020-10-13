@@ -2,7 +2,7 @@
 
 Display ldap user information or create / delete user.
 
-### Usage
+#### Usage
 
 ```
 ```
