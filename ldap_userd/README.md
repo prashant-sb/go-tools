@@ -12,6 +12,7 @@ Display ldap user information or create / delete user.
 ```
 
 #### List all users
+
 ```
 ```
 
