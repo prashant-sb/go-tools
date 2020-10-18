@@ -2,6 +2,8 @@
 ![Go](https://github.com/prashant-sb/go-utils/workflows/Go/badge.svg)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
+[![DeepSource](https://deepsource.io/gh/prashant-sb/go-utils.svg/?label=active+issues&show_trend=true)](https://deepsource.io/gh/prashant-sb/go-utils/?ref=repository-badge)
+
 # go-utils
 
 Collection of CLIs for common system tasks.
