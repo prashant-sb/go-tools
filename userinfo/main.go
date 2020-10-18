@@ -50,13 +50,13 @@ func main() {
 			ul := uinfo.NewUserList()
 			ulist, err := ul.Get()
 			if err != nil {
-				log.Error("Error in Get User list: ", err.Error)
+				log.Error("Error in Get User list: ", err)
 				return
 			}
 
 			jsonList, err := uinfo.Decode(ulist)
 			if err != nil {
-				log.Error("Error in decode: ", err.Error)
+				log.Error("Error in decode: ", err)
 				return
 			}
 
