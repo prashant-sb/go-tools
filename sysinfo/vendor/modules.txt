@@ -1,0 +1,21 @@
+# github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d
+github.com/StackExchange/wmi
+# github.com/ghodss/yaml v1.0.0
+github.com/ghodss/yaml
+# github.com/go-ole/go-ole v1.2.4
+github.com/go-ole/go-ole
+github.com/go-ole/go-ole/oleutil
+# github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
+github.com/golang/glog
+# github.com/jaypipes/ghw v0.6.1
+github.com/jaypipes/ghw
+# github.com/jaypipes/pcidb v0.5.0
+github.com/jaypipes/pcidb
+# github.com/mitchellh/go-homedir v1.0.0
+github.com/mitchellh/go-homedir
+# github.com/pkg/errors v0.8.0
+github.com/pkg/errors
+# gopkg.in/yaml.v2 v2.2.2
+gopkg.in/yaml.v2
+# howett.net/plist v0.0.0-20181124034731-591f970eefbb
+howett.net/plist
