@@ -152,7 +152,9 @@ func (w *Watcher) handleEvent(data []byte) error {
 	switch hdr.What {
 	case PROC_EVENT_FORK:
 		event := &forkProcEvent{}
-		binary.Read(buf, byteOrder, event)
+		if err := binary.Read(buf, byteOrder, event); err != nil {
+			return err
+		}
 		ppid := uint64(event.ParentTgid)
 		pid := uint64(event.ChildTgid)
 
