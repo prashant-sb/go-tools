@@ -62,7 +62,6 @@ func main() {
 
 			fmt.Printf("%v\n", jsonList)
 		}
-		break
 
 	case *create:
 		// Add user from json User Schema
@@ -75,7 +74,6 @@ func main() {
 			}
 			fmt.Printf("User %s added\n", userName)
 		}
-		break
 
 	case *delete:
 		// Deletes user by Username
@@ -87,7 +85,6 @@ func main() {
 			}
 			fmt.Printf("%s user deleted.\n", *user)
 		}
-		break
 
 	default:
 		// Prints usage in all other cases.

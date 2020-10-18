@@ -55,7 +55,6 @@ func FileSha256(filePath string) (string, error) {
 	return shaCheckSum, nil
 }
 
-
 // Calculates the CRC of file, returns
 // checksum or error
 func FileCrc32(filePath string) (string, error) {
@@ -73,7 +72,7 @@ func FileCrc32(filePath string) (string, error) {
 		return crcCheckSum, err
 	}
 
-	hashInBytes := hash.Sum(nil)[:]
+	hashInBytes := hash.Sum(nil)[:16]
 	crcCheckSum = hex.EncodeToString(hashInBytes)
 
 	return crcCheckSum, nil

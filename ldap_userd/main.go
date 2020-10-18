@@ -15,6 +15,4 @@ func main() {
 
 	flag.Parse()
 	log.Info("Started ...")
-
-	return
 }

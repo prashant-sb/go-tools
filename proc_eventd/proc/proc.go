@@ -94,7 +94,7 @@ func (pi *ProcEntry) constructProcMap() error {
 		}
 
 		entry := strings.Split(string(content), "\n")
-		for field, _ := range pmeta.procAttrs {
+		for field := range pmeta.procAttrs {
 			for _, line := range entry {
 				attrs := strings.Split(line, ":")
 				if attrs[0] == field {

@@ -17,7 +17,7 @@ func main() {
 
 	procIter := prc.NewProcIterator()
 
-	if *list == true {
+	if *list {
 		log.Info("Listing processes ")
 		if err := procIter.List(); err != nil {
 			log.Error("Error : ", err.Error())
