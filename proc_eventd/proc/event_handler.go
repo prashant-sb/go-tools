@@ -40,13 +40,13 @@ func NewEventHandler() (EventHandler, error) {
 func (e *Events) Notify(pid uint64) error {
 
 	notif, err := NewWatcher()
-	defer notif.Close()
-	done := make(chan bool)
-
     if err != nil {
 		log.Error("Error occured in creating process watcher: ", err.Error())
 		return err
 	}
+
+	defer notif.Close()
+	done := make(chan bool)
 
 	err = notif.Watch(pid, e.all)
 	if err != nil {

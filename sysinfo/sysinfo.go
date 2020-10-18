@@ -88,10 +88,12 @@ func (opt *fileopt) To(file string) error {
 	}
 
 	f, err := os.Create(file)
-	defer f.Close()
 	if err != nil {
 		return err
 	}
+
+	defer f.Close()
+
 	_, err = f.WriteString(info)
 	if err != nil {
 		return err
