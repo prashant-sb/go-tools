@@ -25,6 +25,9 @@ func main() {
 	}
 
 	if *wpid != 0 {
-		procIter.Watch(*wpid)
+		err := procIter.Watch(*wpid)
+		if err != nil {
+			log.Error("Error occurred while watching pid: ", *wpid)
+		}
 	}
 }

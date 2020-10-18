@@ -118,7 +118,8 @@ func (w *Watcher) readEvents() {
 
 		for _, m := range msgs {
 			if m.Header.Type == syscall.NLMSG_DONE {
-				w.handleEvent(m.Data)
+				err := w.handleEvent(m.Data)
+				w.Error <- err
 			}
 		}
 	}
@@ -135,13 +136,18 @@ func (w *Watcher) isWatching(pid uint64, event uint32) bool {
 // Dispatch events from the netlink socket to the Event channels.
 // Unlike bsd kqueue, netlink receives events for all pids,
 // so we apply filtering based on the watch table via isWatching()
-func (w *Watcher) handleEvent(data []byte) {
+func (w *Watcher) handleEvent(data []byte) error {
 	buf := bytes.NewBuffer(data)
 	msg := &cnMsg{}
 	hdr := &procEventHeader{}
 
-	binary.Read(buf, byteOrder, msg)
-	binary.Read(buf, byteOrder, hdr)
+	if err := binary.Read(buf, byteOrder, msg); err != nil {
+		return err
+	}
+
+	if err := binary.Read(buf, byteOrder, hdr); err != nil {
+		return err
+	}
 
 	switch hdr.What {
 	case PROC_EVENT_FORK:
@@ -153,7 +159,9 @@ func (w *Watcher) handleEvent(data []byte) {
 		if w.isWatching(ppid, PROC_EVENT_EXEC) {
 			// follow forks
 			watch := w.watches[ppid]
-			w.Watch(pid, watch.flags)
+			if err := w.Watch(pid, watch.flags); err != nil {
+				return err
+			}
 		}
 
 		if w.isWatching(ppid, PROC_EVENT_FORK) {
@@ -161,7 +169,9 @@ func (w *Watcher) handleEvent(data []byte) {
 		}
 	case PROC_EVENT_EXEC:
 		event := &execProcEvent{}
-		binary.Read(buf, byteOrder, event)
+		if err := binary.Read(buf, byteOrder, event); err != nil {
+			return err
+		}
 		pid := uint64(event.ProcessTgid)
 
 		if w.isWatching(pid, PROC_EVENT_EXEC) {
@@ -169,14 +179,21 @@ func (w *Watcher) handleEvent(data []byte) {
 		}
 	case PROC_EVENT_EXIT:
 		event := &exitProcEvent{}
-		binary.Read(buf, byteOrder, event)
+		if err := binary.Read(buf, byteOrder, event); err != nil {
+			return err
+		}
 		pid := uint64(event.ProcessTgid)
 
 		if w.isWatching(pid, PROC_EVENT_EXIT) {
-			w.RemoveWatch(pid)
+			if err := w.RemoveWatch(pid); err != nil {
+				return err
+			}
+
 			w.Exit <- &ProcEventExit{Pid: pid}
 		}
 	}
+
+	return nil
 }
 
 // Bind our netlink socket and
@@ -209,9 +226,15 @@ func (listener *netlinkListener) bind() error {
 // Send an ignore control message to the connector driver
 // and close our netlink socket.
 func (listener *netlinkListener) close() error {
-	err := listener.send(_PROC_CN_MCAST_IGNORE)
-	syscall.Close(listener.sock)
-	return err
+	if err := listener.send(_PROC_CN_MCAST_IGNORE); err != nil {
+		return err
+	}
+
+	if err := syscall.Close(listener.sock); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Generic method for sending control messages to the connector
@@ -232,8 +255,14 @@ func (listener *netlinkListener) send(op uint32) error {
 	pr.Data.Len = uint16(binary.Size(op))
 
 	buf := bytes.NewBuffer(make([]byte, 0, pr.Header.Len))
-	binary.Write(buf, byteOrder, pr)
-	binary.Write(buf, byteOrder, op)
+
+	if err := binary.Write(buf, byteOrder, pr); err != nil {
+		return err
+	}
+
+	if err := binary.Write(buf, byteOrder, op); err != nil {
+		return err
+	}
 
 	return syscall.Sendto(listener.sock, buf.Bytes(), 0, listener.addr)
 }

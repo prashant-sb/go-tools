@@ -2,28 +2,29 @@ package proc
 
 import (
 	"errors"
+
 	log "github.com/golang/glog"
 )
 
 type ProcEventFork struct {
-	ParentPid uint64			// Pid of the process that called fork()
-	ChildPid  uint64			// Child process pid created by fork()
+	ParentPid uint64 // Pid of the process that called fork()
+	ChildPid  uint64 // Child process pid created by fork()
 }
 
 type ProcEventExec struct {
-	Pid uint64					// Pid of the process that called exec()
+	Pid uint64 // Pid of the process that called exec()
 }
 
 type ProcEventExit struct {
-	Pid uint64 					// Pid of the process that called exit()
+	Pid uint64 // Pid of the process that called exit()
 }
 
 type watch struct {
-	flags uint32 				// Saved value of Watch() flags param
+	flags uint32 // Saved value of Watch() flags param
 }
 
 type eventListener interface {
-	close() error 				// Watch.Close() closes the OS specific listener
+	close() error // Watch.Close() closes the OS specific listener
 }
 
 type Watcher struct {
@@ -76,13 +77,15 @@ func (w *Watcher) Close() error {
 	w.isClosed = true
 
 	for pid := range w.watches {
-		w.RemoveWatch(pid)
+		err := w.RemoveWatch(pid)
+		if err != nil {
+			log.Error("Error in removing watch for pid: ", pid)
+		}
 	}
-
 	w.done <- true
-	w.listener.close()
 
-	return nil
+	return w.listener.close()
+
 }
 
 // Add pid to the watched process set.
@@ -129,4 +132,3 @@ func (w *Watcher) isDone() bool {
 	}
 	return done
 }
-

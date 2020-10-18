@@ -6,7 +6,7 @@ import (
 
 // Watchable events
 type Events struct {
-	all uint32
+	all  uint32
 	exec uint32
 	fork uint32
 	exit uint32
@@ -17,10 +17,10 @@ type EventHandler interface {
 	Notify(uint64) error
 }
 
-// Initialize event 
+// Initialize event
 func NewEvent() (*Events, error) {
 	e := Events{
-		all: PROC_EVENT_ALL,
+		all:  PROC_EVENT_ALL,
 		exec: PROC_EVENT_EXEC,
 		fork: PROC_EVENT_FORK,
 		exit: PROC_EVENT_EXIT,
@@ -40,7 +40,7 @@ func NewEventHandler() (EventHandler, error) {
 func (e *Events) Notify(pid uint64) error {
 
 	notif, err := NewWatcher()
-    if err != nil {
+	if err != nil {
 		log.Error("Error occured in creating process watcher: ", err.Error())
 		return err
 	}
@@ -53,22 +53,24 @@ func (e *Events) Notify(pid uint64) error {
 		return err
 	}
 
-	// Process events 
+	// Process events
 	log.Info("Watching pid: ", pid)
-    go func() {
-        for {
-            select {
-            case ev := <-notif.Fork:
-                log.Info("Fork event:", *ev)
-            case ev := <-notif.Exec:
-                log.Info("Exec event:", *ev)
-            case ev := <-notif.Exit:
-                log.Info("Exit event:", *ev)
-            case err := <-notif.Error:
-            	log.Info("Error:", err)
-            }
-        }
-    }()
+	go func() {
+		for {
+			select {
+			case ev := <-notif.Fork:
+				log.Info("Fork event:", *ev)
+			case ev := <-notif.Exec:
+				log.Info("Exec event:", *ev)
+			case ev := <-notif.Exit:
+				log.Info("Exit event:", *ev)
+			case err := <-notif.Error:
+				if err != nil {
+					log.Error("Error:", err)
+				}
+			}
+		}
+	}()
 	<-done
 
 	return nil
