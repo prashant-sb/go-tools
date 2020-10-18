@@ -43,6 +43,9 @@ type Userinfo struct {
 	// HomeDir is the path to the user's home directory
 	// (if they have one).
 	HomeDir string `json:"homeDir,omitempty"`
+	// Added for unit tests
+
+	UserPasswd string `json:"userPasswd,omitempty"`
 }
 
 type UserList struct {
@@ -69,7 +72,7 @@ type UserOps interface {
 // Linux password file.
 type UserListOps interface {
 	Get() (*UserList, error)
-	readEtcPasswd(string) ([]string, error)
+	ReadEtcPasswd(string) ([]string, error)
 }
 
 // NewUserOps inits the interface for Userinfo
@@ -91,7 +94,7 @@ func (ul *UserList) Get() (*UserList, error) {
 
 	var userlist []Userinfo
 
-	ulist, err := ul.readEtcPasswd(userDB)
+	ulist, err := ul.ReadEtcPasswd(userDB)
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +126,7 @@ func (ul *UserList) Get() (*UserList, error) {
 }
 
 // Read file /etc/passwd and return slice of users
-func (ul *UserList) readEtcPasswd(f string) ([]string, error) {
+func (ul *UserList) ReadEtcPasswd(f string) ([]string, error) {
 	var ulist []string
 
 	file, err := os.Open(f)
@@ -183,14 +186,13 @@ func (u *Userinfo) AddUser(usrJsonFile string) (string, error) {
 		log.Error("Error in unmarshal: ", err.Error())
 		return usr, err
 	}
-	usr = uinfo.Username
 
 	if err = u.add(&uinfo); err != nil {
-		log.Error("Error in adding user ", usr)
+		log.Error("Error in adding user ", uinfo.Username)
 		return "", err
 	}
 
-	return usr, nil
+	return uinfo.Username, nil
 }
 
 // DeleteUser gets the schema for user by name, deletes it if available.
@@ -225,14 +227,22 @@ func (u *Userinfo) creadential() (string, error) {
 // add user from Userinfo, if new user
 func (u *Userinfo) add(uinfo *Userinfo) error {
 
+	var passwd string
+	var err error
+
 	if _, err := u.Get(uinfo.Username); err == nil {
 		return errors.New("User " + uinfo.Username + " already added.")
 	}
 
 	u.Username = uinfo.Username
-	passwd, err := u.creadential()
-	if err != nil {
-		return err
+
+	if uinfo.UserPasswd != "" {
+		passwd = uinfo.UserPasswd
+	} else {
+		passwd, err = u.creadential()
+		if err != nil {
+			return err
+		}
 	}
 	argUser := []string{"-m", "-d", uinfo.HomeDir, "-G", uinfo.Groupname, "-s", userShell, uinfo.Username, "-p", passwd}
 	userCmd := exec.Command(userAdd, argUser...)

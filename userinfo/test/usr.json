@@ -2,6 +2,7 @@
    "uid": "0",
    "gid": "0",
    "userName": "test",
+   "userPasswd": "testPass@1",
    "groupName": "syslog",
    "name": "Test User",
    "homeDir": "/home/test"
