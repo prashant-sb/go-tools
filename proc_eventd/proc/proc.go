@@ -110,7 +110,7 @@ func (pi *ProcEntry) constructProcMap() error {
 }
 
 // contruct and returns the process map at the instance.
-func (pi *ProcEntry) getProcMap() (map[string]*ProcMeta, error) {
+func (pi *ProcEntry) GetProcMap() (map[string]*ProcMeta, error) {
 
 	if err := pi.constructProcMap(); err != nil {
 		return nil, err
@@ -135,7 +135,7 @@ func (pi *ProcEntry) Watch(pid uint64) error {
 
 // List the details of process map
 func (pi *ProcEntry) List() error {
-	pmap, err := pi.getProcMap()
+	pmap, err := pi.GetProcMap()
 	if err != nil {
 		return err
 	}
