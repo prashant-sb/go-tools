@@ -111,7 +111,7 @@ func (w *Watcher) Watch(pid uint64, flags uint32) error {
 func (w *Watcher) RemoveWatch(pid uint64) error {
 	_, ok := w.watches[pid]
 	if !ok {
-		log.Error("Watch does not exist for %v", pid)
+		log.Error("Watch does not exist for ", pid)
 		return errors.New("watch for pid does not exist")
 	}
 	delete(w.watches, pid)

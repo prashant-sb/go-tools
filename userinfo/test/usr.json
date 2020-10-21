@@ -1,9 +1,9 @@
 {
-   "uid": "0",
-   "gid": "0",
+   "uid": "65533",
+   "gid": "65533",
    "userName": "test",
    "userPasswd": "testPass@1",
-   "groupName": "syslog",
+   "groupName": "nogroup",
    "name": "Test User",
    "homeDir": "/home/test"
 }
