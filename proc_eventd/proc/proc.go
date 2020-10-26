@@ -19,6 +19,7 @@ const (
 type ProcIter interface {
 	List() error
 	Watch(pid uint64) error
+	GetProcMap() (map[string]*ProcMeta, error)
 }
 
 // Process attribute map
