@@ -118,7 +118,6 @@ func (c *CommandArgs) Request() *ftp.Request {
 			Recurse: cmd["recurse"].Value.(bool),
 		}
 	}
-
 	if _, exists := cmd["download"]; exists {
 		return &ftp.Request{
 			Type:    ftp.DownloadRequest,
@@ -126,14 +125,12 @@ func (c *CommandArgs) Request() *ftp.Request {
 			Recurse: cmd["recurse"].Value.(bool),
 		}
 	}
-
 	if _, exists := cmd["list"]; exists {
 		return &ftp.Request{
 			Type:    ftp.ListRequest,
 			Target:  cmd["list"].Value.(string),
 			Recurse: cmd["recurse"].Value.(bool),
 		}
-
 	}
 
 	return &ftp.Request{
@@ -142,7 +139,6 @@ func (c *CommandArgs) Request() *ftp.Request {
 }
 
 func (c *CommandArgs) Run() error {
-
 	cred, err := c.getServerParams()
 	if err != nil {
 		return err
@@ -155,9 +151,7 @@ func (c *CommandArgs) Run() error {
 	defer ftp.Close(conn)
 
 	req := c.Request()
-
 	switch req.Type {
-
 	case ftp.ListRequest:
 		if err := ftp.List(conn, req); err != nil {
 			return err

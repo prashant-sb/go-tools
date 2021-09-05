@@ -5,11 +5,11 @@
 package main
 
 import (
-	"github.com/prashant-sb/go-utils/ftp_client/ftpcli"
+	"github.com/prashant-sb/go-utils/ftp_client/cli"
 	"go.uber.org/zap"
 )
 
-var opt *ftpcli.CommandArgs = nil
+var opt *cli.CommandArgs = nil
 var Log *zap.SugaredLogger = nil
 
 func init() {
