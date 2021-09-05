@@ -18,10 +18,10 @@ func FileMd5Sum(filePath string) (string, error) {
 	var md5sum string
 
 	file, err := os.Open(filePath)
+	defer file.Close()
 	if err != nil {
 		return md5sum, err
 	}
-	defer file.Close()
 
 	hash := md5.New()
 	if _, err := io.Copy(hash, file); err != nil {
