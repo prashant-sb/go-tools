@@ -10,6 +10,8 @@ import (
 )
 
 var opt *ftpcli.CommandArgs = nil
+
+// TODO: Change logger
 var Log *zap.SugaredLogger = nil
 
 func init() {
@@ -21,7 +23,10 @@ func init() {
 }
 
 func main() {
-	opt.Sanitize()
+	if err := opt.Sanitize(); err != nil {
+		Log.Error(err, "Error in running ftp client operation")
+		return
+	}
 
 	if err := opt.Run(); err != nil {
 		Log.Error(err, "Error in running ftp client operation")

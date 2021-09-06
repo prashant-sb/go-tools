@@ -1,4 +1,4 @@
-package ftpcli
+package cli
 
 import (
 	"errors"
@@ -81,10 +81,14 @@ func (c *CommandArgs) Sanitize() error {
 		}
 	}
 
+	if len(flag.Args()) == 0 {
+		flag.Usage()
+		return errors.New("Arguments required")
+	}
+
 	flag.Parse()
 
 	// TODO: Add option validations
-
 	return nil
 }
 
@@ -139,12 +143,13 @@ func (c *CommandArgs) Request() *ftp.Request {
 }
 
 func (c *CommandArgs) Run() error {
+	var err error = nil
 	cred, err := c.getServerParams()
 	if err != nil {
 		return err
 	}
 
-	conn, err := ftp.NewConnection(cred)
+	conn, err := ftp.NewConnection(ftp.DefaultOptions(cred))
 	if err != nil {
 		return err
 	}
@@ -153,23 +158,17 @@ func (c *CommandArgs) Run() error {
 	req := c.Request()
 	switch req.Type {
 	case ftp.ListRequest:
-		if err := ftp.List(conn, req); err != nil {
-			return err
-		}
+		err = ftp.List(conn, req)
 
 	case ftp.UploadRequest:
-		if err := ftp.Upload(conn, req); err != nil {
-			return err
-		}
+		err = ftp.Upload(conn, req)
 
 	case ftp.DownloadRequest:
-		if err := ftp.Download(conn, req); err != nil {
-			return err
-		}
+		err = ftp.Download(conn, req)
 
 	default:
-		return errors.New("Unknown request type")
+		err = errors.New("Unknown request type")
 	}
 
-	return nil
+	return err
 }

@@ -1,8 +1,11 @@
 package ftp
 
 import (
+	"bufio"
+	"context"
 	"io"
 	"net"
+	"os"
 	"time"
 )
 
@@ -30,7 +33,7 @@ type Request struct {
 	EntryType TargetType
 }
 
-type DialOptions struct {
+type dialOptions struct {
 	dialer net.Dialer
 	conn   net.Conn
 	cred   *Cred
@@ -38,16 +41,47 @@ type DialOptions struct {
 }
 
 type FtpConnect struct {
-	cred    *Cred
-	options *DialOptions
+	options *dialOptions
 	writer  io.Writer
 }
 
-func NewConnection(cred *Cred, dialer ...DialOptions) (*FtpConnect, error) {
-	return nil, nil
+type DialOption struct {
+	setup func(do *dialOptions)
+}
+
+func DefaultOptions(cr *Cred) DialOption {
+	return DialOption{func(do *dialOptions) {
+		do.conn = nil
+		do.host = "localhost"
+		do.cred = cr
+	}}
+}
+
+func NewConnection(options ...DialOption) (*FtpConnect, error) {
+	dopt := &dialOptions{}
+	for _, opt := range options {
+		opt.setup(dopt)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), dopt.cred.Timeout)
+	defer cancel()
+
+	tconn, err := dopt.dialer.DialContext(ctx, "tcp", dopt.cred.Server+":"+dopt.cred.Port)
+	if err != nil {
+		return nil, err
+	}
+	rAddr := tconn.RemoteAddr().(*net.TCPAddr)
+	dopt.host = rAddr.IP.String()
+	dopt.conn = tconn
+
+	return &FtpConnect{
+		options: dopt,
+		writer:  bufio.NewWriter(os.Stdout),
+	}, nil
 }
 
 func Close(ftpConn *FtpConnect) {
+	ftpConn.options.conn.Close()
 }
 
 func Download(ftpConn *FtpConnect, req *Request) error {
