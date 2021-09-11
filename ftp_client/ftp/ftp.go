@@ -7,10 +7,12 @@ import (
 	"net"
 	"os"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
-type RequestType int
 type TargetType int
+type RequestType int
 
 const (
 	ListRequest RequestType = iota
@@ -74,6 +76,7 @@ func NewConnection(options ...DialOption) (*FtpConnect, error) {
 	dopt.host = rAddr.IP.String()
 	dopt.conn = tconn
 
+	log.Infof("FTP connected : %s", dopt.cred.Server)
 	return &FtpConnect{
 		options: dopt,
 		writer:  bufio.NewWriter(os.Stdout),

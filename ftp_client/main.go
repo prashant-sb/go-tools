@@ -6,29 +6,31 @@ package main
 
 import (
 	ftpcli "github.com/prashant-sb/go-utils/ftp_client/cli"
+	log "github.com/sirupsen/logrus"
 	"go.uber.org/zap"
 )
 
-var opt *ftpcli.CommandArgs = nil
+var opt ftpcli.CommandArgs = nil
 
 // TODO: Change logger
-var Log *zap.SugaredLogger = nil
+var Log *zap.Logger = nil
 
 func init() {
-	logger, _ := zap.NewProduction()
-	Log = logger.Sugar()
 	opt = ftpcli.NewCmdArgs()
 
-	defer logger.Sync()
+	log.SetFormatter(&log.TextFormatter{
+		DisableColors: false,
+		FullTimestamp: true,
+	})
 }
 
 func main() {
 	if err := opt.Sanitize(); err != nil {
-		Log.Error(err, "Error in running ftp client operation")
+		log.Errorf("Error in running ftp client operations: %s", err)
 		return
 	}
 
 	if err := opt.Run(); err != nil {
-		Log.Error(err, "Error in running ftp client operation")
+		log.Error(err, "Error in running ftp client operations: %s", err)
 	}
 }

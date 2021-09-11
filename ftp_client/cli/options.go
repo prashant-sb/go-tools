@@ -3,11 +3,13 @@ package cli
 import (
 	"errors"
 	"flag"
+	"os"
+	"time"
 
 	"github.com/prashant-sb/go-utils/ftp_client/ftp"
 )
 
-type CommandArgs map[string]Arg
+type CommandArgs map[string]*Arg
 
 type Arg struct {
 	Name    string
@@ -17,123 +19,149 @@ type Arg struct {
 	Value   interface{}
 }
 
-func NewCmdArgs() *CommandArgs {
-	return &CommandArgs{
-		"server": {
-			Name:    "server",
-			Desc:    "Address of FTP Server",
-			Short:   "s",
-			Default: "localhost",
-		},
-		"list": {
-			Name:    "list",
-			Desc:    "List directory from FTP Server",
-			Short:   "l",
-			Default: "/",
-		},
-		"upload": {
-			Name:    "upload",
-			Desc:    "Local file or dir path",
-			Short:   "u",
+func NewCmdArgs() CommandArgs {
+	return CommandArgs{
+		"server": &Arg{
+			Name: "server",
+			Desc: "Address of FTP Server",
+			//Short:   "s",
 			Default: "",
 		},
-		"download": {
-			Name:    "download",
-			Desc:    "Local file or dir path",
-			Short:   "d",
+		"list": &Arg{
+			Name: "list",
+			Desc: "List directory from FTP Server",
+			//Short:   "l",
 			Default: "",
 		},
-		"user": {
-			Name:    "user",
-			Desc:    "FTP User name",
-			Short:   "f",
-			Default: "n",
-		},
-		"port": {
-			Name:    "port",
-			Desc:    "FTP port for connection",
-			Short:   "p",
+		"upload": &Arg{
+			Name: "upload",
+			Desc: "Local file or dir path",
+			//Short:   "u",
 			Default: "",
 		},
-		"recurse": {
-			Name:    "recurse",
-			Desc:    "Traverse all embeded directories",
-			Short:   "r",
+		"download": &Arg{
+			Name: "download",
+			Desc: "Local file or dir path",
+			//Short:   "d",
+			Default: "",
+		},
+		"user": &Arg{
+			Name: "user",
+			Desc: "FTP User name",
+			//Short:   "n",
+			Default: "",
+		},
+		"password": &Arg{
+			Name: "password",
+			Desc: "Password for FTP User",
+			//Short:   "p",
+			Default: "",
+		},
+		"port": &Arg{
+			Name: "port",
+			Desc: "FTP port for connection",
+			//Short:   "p",
+			Default: "",
+		},
+		"recurse": &Arg{
+			Name: "recurse",
+			Desc: "Traverse all embeded directories",
+			//Short:   "r",
 			Default: false,
 		},
 	}
 }
 
-func (c *CommandArgs) Sanitize() error {
-	for name, arg := range *c {
+func (c CommandArgs) Sanitize() error {
+	for name, arg := range c {
 		// Get correct default type
 		switch arg.Default.(type) {
 
 		case bool:
-			var val = flag.Bool(name, arg.Default.(bool), arg.Desc)
-			flag.BoolVar(val, arg.Short, arg.Default.(bool), arg.Desc)
-			arg.Value = val
+			arg.Value = flag.Bool(name, arg.Default.(bool), arg.Desc)
+			if len(arg.Short) > 0 {
+				flag.BoolVar(arg.Value.(*bool), arg.Short, arg.Default.(bool), arg.Desc)
+			}
 
 		case string:
-			var val = flag.String(name, arg.Default.(string), arg.Desc)
-			flag.StringVar(val, arg.Short, arg.Default.(string), arg.Desc)
-			arg.Value = val
+			arg.Value = flag.String(name, arg.Default.(string), arg.Desc)
+			if len(arg.Short) > 0 {
+				flag.StringVar(arg.Value.(*string), arg.Short, arg.Default.(string), arg.Desc)
+			}
 		}
 	}
-
-	if len(flag.Args()) == 0 {
+	if len(os.Args) == 1 {
 		flag.Usage()
 		return errors.New("Arguments required")
 	}
-
 	flag.Parse()
 
 	// TODO: Add option validations
 	return nil
 }
 
-func (c *CommandArgs) getServerParams() (*ftp.Cred, error) {
-	cmd := *c
-	if _, exists := cmd["server"]; !exists {
-		return nil, errors.New("server param not found")
+func (cmd CommandArgs) getStringVal(key string) (string, error) {
+	einval := errors.New("Invalid parameters")
+	if _, exists := cmd[key]; !exists {
+		return "", einval
 	}
 
-	if _, exists := cmd["port"]; !exists {
-		return nil, errors.New("port param not found")
+	if val, ok := cmd[key].Value.(*string); ok {
+		return *val, nil
 	}
 
-	if _, exists := cmd["user"]; !exists {
-		return nil, errors.New("user param not found")
-	}
-
-	return &ftp.Cred{
-		User:   cmd["user"].Value.(string),
-		Port:   cmd["port"].Value.(string),
-		Server: cmd["server"].Value.(string),
-	}, nil
+	return "", einval
 }
 
-func (c *CommandArgs) Request() *ftp.Request {
-	cmd := *c
+func (cmd CommandArgs) getServerParams() (*ftp.Cred, error) {
+	var err error = nil
+	var val string
+
+	cred := &ftp.Cred{
+		Port:    "21",
+		Timeout: time.Second * 30,
+	}
+
+	if val, err = cmd.getStringVal("server"); err == nil {
+		cred.Server = val
+	}
+
+	if val, err = cmd.getStringVal("user"); err == nil {
+		cred.User = val
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	if val, err = cmd.getStringVal("port"); err == nil {
+		cred.Port = val
+	}
+
+	return cred, nil
+}
+
+func (cmd CommandArgs) Request() *ftp.Request {
+
 	if _, exists := cmd["upload"]; exists {
 		return &ftp.Request{
 			Type:    ftp.UploadRequest,
-			Target:  cmd["upload"].Value.(string),
-			Recurse: cmd["recurse"].Value.(bool),
+			Target:  *cmd["upload"].Value.(*string),
+			Recurse: *cmd["recurse"].Value.(*bool),
 		}
 	}
 	if _, exists := cmd["download"]; exists {
 		return &ftp.Request{
 			Type:    ftp.DownloadRequest,
-			Target:  cmd["download"].Value.(string),
-			Recurse: cmd["recurse"].Value.(bool),
+			Target:  *cmd["download"].Value.(*string),
+			Recurse: *cmd["recurse"].Value.(*bool),
 		}
 	}
 	if _, exists := cmd["list"]; exists {
 		return &ftp.Request{
 			Type:    ftp.ListRequest,
-			Target:  cmd["list"].Value.(string),
-			Recurse: cmd["recurse"].Value.(bool),
+			Target:  *cmd["list"].Value.(*string),
+			Recurse: *cmd["recurse"].Value.(*bool),
 		}
 	}
 
@@ -142,7 +170,7 @@ func (c *CommandArgs) Request() *ftp.Request {
 	}
 }
 
-func (c *CommandArgs) Run() error {
+func (c CommandArgs) Run() error {
 	var err error = nil
 	cred, err := c.getServerParams()
 	if err != nil {
