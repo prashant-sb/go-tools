@@ -26,11 +26,11 @@ func init() {
 
 func main() {
 	if err := opt.Sanitize(); err != nil {
-		log.Errorf("Error in running ftp client operations: %s", err)
+		log.Error("Error in running ftp client operations: ", err)
 		return
 	}
 
 	if err := opt.Run(); err != nil {
-		log.Error(err, "Error in running ftp client operations: %s", err)
+		log.Error("Error in running ftp client operations: ", err)
 	}
 }

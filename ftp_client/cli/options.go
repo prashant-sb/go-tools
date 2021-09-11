@@ -107,7 +107,9 @@ func (cmd CommandArgs) getStringVal(key string) (string, error) {
 	}
 
 	if val, ok := cmd[key].Value.(*string); ok {
-		return *val, nil
+		if *val != "" {
+			return *val, nil
+		}
 	}
 
 	return "", einval
@@ -137,7 +139,6 @@ func (cmd CommandArgs) getServerParams() (*ftp.Cred, error) {
 	if val, err = cmd.getStringVal("port"); err == nil {
 		cred.Port = val
 	}
-
 	return cred, nil
 }
 

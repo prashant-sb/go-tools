@@ -76,7 +76,7 @@ func NewConnection(options ...DialOption) (*FtpConnect, error) {
 	dopt.host = rAddr.IP.String()
 	dopt.conn = tconn
 
-	log.Infof("FTP connected : %s", dopt.cred.Server)
+	log.Info("FTP connected: ", dopt.cred.Server)
 	return &FtpConnect{
 		options: dopt,
 		writer:  bufio.NewWriter(os.Stdout),
