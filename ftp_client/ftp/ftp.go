@@ -42,7 +42,7 @@ type dialOptions struct {
 	host   string
 }
 
-type FtpConnect struct {
+type FtpConnector struct {
 	options *dialOptions
 	writer  io.Writer
 }
@@ -59,7 +59,7 @@ func DefaultOptions(cr *Cred) DialOption {
 	}}
 }
 
-func NewConnection(options ...DialOption) (*FtpConnect, error) {
+func NewConnection(options ...DialOption) (*FtpConnector, error) {
 	dopt := &dialOptions{}
 	for _, opt := range options {
 		opt.setup(dopt)
@@ -77,24 +77,69 @@ func NewConnection(options ...DialOption) (*FtpConnect, error) {
 	dopt.conn = tconn
 
 	log.Info("FTP connected: ", dopt.cred.Server)
-	return &FtpConnect{
+	return &FtpConnector{
 		options: dopt,
 		writer:  bufio.NewWriter(os.Stdout),
 	}, nil
 }
 
-func Close(ftpConn *FtpConnect) {
+func Close(ftpConn *FtpConnector) {
 	ftpConn.options.conn.Close()
 }
 
-func Download(ftpConn *FtpConnect, req *Request) error {
+func Download(ftpConn *FtpConnector, req *Request) error {
 	return nil
 }
 
-func Upload(ftpConn *FtpConnect, req *Request) error {
+func Upload(ftpConn *FtpConnector, req *Request) error {
 	return nil
 }
 
-func List(ftpConn *FtpConnect, req *Request) error {
+func List(ftpConn *FtpConnector, req *Request) error {
+	return nil
+}
+
+func Delete(ftpConn *FtpConnector, req *Request) error {
+	return nil
+}
+
+// -----
+func (f *FtpConnector) login(user, password string) error {
+	return nil
+}
+
+func (f *FtpConnector) logout() error {
+	return nil
+}
+
+func (f *FtpConnector) changeDir(to string) (string, error) {
+	return "", nil
+}
+
+func (f *FtpConnector) currentDir() (string, error) {
+	return "", nil
+}
+
+func (f *FtpConnector) createDir(path string) error {
+	return nil
+}
+
+func (f *FtpConnector) removeDir(path string) error {
+	return nil
+}
+
+func (f *FtpConnector) rename(from, to string) error {
+	return nil
+}
+
+func (f *FtpConnector) retr(path string) error {
+	return nil
+}
+
+func (f *FtpConnector) stor(path string, r io.Reader) error {
+	return nil
+}
+
+func (f *FtpConnector) quit() error {
 	return nil
 }
