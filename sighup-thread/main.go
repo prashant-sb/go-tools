@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/prashant-sb/go-util/async/routine"
+	"github.com/prashant-sb/go-tools/async/routine"
 	log "github.com/sirupsen/logrus"
 )
 

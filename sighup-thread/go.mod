@@ -1,4 +1,4 @@
-module github.com/prashant-sb/go-util/async
+module github.com/prashant-sb/go-tools/async
 
 go 1.17
 
