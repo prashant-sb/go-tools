@@ -1,4 +1,4 @@
-module github.com/prashant-sb/go-utils/ldap_userd
+module github.com/prashant-sb/go-tools/ldap_userd
 
 go 1.13
 

@@ -5,7 +5,7 @@
 package main
 
 import (
-	ftpcli "github.com/prashant-sb/go-utils/ftp_client/cli"
+	ftpcli "github.com/prashant-sb/go-tools/ftp_client/cli"
 	log "github.com/sirupsen/logrus"
 	"go.uber.org/zap"
 )

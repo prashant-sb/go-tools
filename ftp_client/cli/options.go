@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/prashant-sb/go-utils/ftp_client/ftp"
+	"github.com/prashant-sb/go-tools/ftp_client/ftp"
 )
 
 type CommandArgs map[string]*Arg

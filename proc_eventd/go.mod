@@ -1,4 +1,4 @@
-module github.com/prashant-sb/go-utils/proc_eventd
+module github.com/prashant-sb/go-tools/proc_eventd
 
 go 1.13
 

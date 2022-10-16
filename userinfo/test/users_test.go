@@ -3,7 +3,7 @@ package users
 import (
 	"testing"
 
-	uinfo "github.com/prashant-sb/go-utils/userinfo/users"
+	uinfo "github.com/prashant-sb/go-tools/userinfo/users"
 )
 
 const (
@@ -14,7 +14,7 @@ const (
 
 func TestAddUser(t *testing.T) {
 	ui := uinfo.NewUserOps()
-	userName, err := ui.AddUser("/media/common/workspace/go-utils/userinfo/test/usr.json")
+	userName, err := ui.AddUser("/media/common/workspace/go-tools/userinfo/test/usr.json")
 	if err != nil {
 		t.Errorf("Error in adding user %v", err.Error())
 		return

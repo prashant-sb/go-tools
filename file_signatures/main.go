@@ -8,7 +8,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-    hasher "github.com/prashant-sb/go-utils/file_signatures/hash"
+
+	hasher "github.com/prashant-sb/go-tools/file_signatures/hash"
 )
 
 //

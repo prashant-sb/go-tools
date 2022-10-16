@@ -1,4 +1,4 @@
-module github.com/prashant-sb/go-utils/userinfo
+module github.com/prashant-sb/go-tools/userinfo
 
 go 1.13
 

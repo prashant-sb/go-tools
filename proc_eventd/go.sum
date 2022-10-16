@@ -1,5 +1,5 @@
 github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b h1:VKtxabqXZkF25pY9ekfRL6a582T4P37/31XEstQ5p58=
 github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b/go.mod h1:SBH7ygxi8pfUlaOkMMuAQtPIUF8ecWP5IEl/CR7VP2Q=
-github.com/prashant-sb/go-utils v0.0.0-20201009130316-8b5948402652 h1:f4WTknKPhs2XEDwzQ90Z1fOabVhTvVN8dZr2IGlmxmk=
-github.com/prashant-sb/go-utils/proc_eventd/proc v0.0.0-20201009050936-83257a9ab664 h1:bZbhJQVc26R/58M9QltvClV6babKEcupDzJHrDv3nmY=
-github.com/prashant-sb/go-utils/proc_eventd/proc v0.0.0-20201009050936-83257a9ab664/go.mod h1:rOHE2BhQPdiG8YvYoATWNPLODDPKLOpA75KN+bj7xC4=
+github.com/prashant-sb/go-tools v0.0.0-20201009130316-8b5948402652 h1:f4WTknKPhs2XEDwzQ90Z1fOabVhTvVN8dZr2IGlmxmk=
+github.com/prashant-sb/go-tools/proc_eventd/proc v0.0.0-20201009050936-83257a9ab664 h1:bZbhJQVc26R/58M9QltvClV6babKEcupDzJHrDv3nmY=
+github.com/prashant-sb/go-tools/proc_eventd/proc v0.0.0-20201009050936-83257a9ab664/go.mod h1:rOHE2BhQPdiG8YvYoATWNPLODDPKLOpA75KN+bj7xC4=

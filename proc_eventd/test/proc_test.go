@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	prc "github.com/prashant-sb/go-utils/proc_eventd/proc"
+	prc "github.com/prashant-sb/go-tools/proc_eventd/proc"
 )
 
 const (
@@ -29,10 +29,10 @@ func TestList(t *testing.T) {
 
 	pout := strings.TrimSpace(string(stdout))
 	tprocs, err := strconv.Atoi(pout)
-    if err != nil {
+	if err != nil {
 		t.Errorf("List() FAILED: error %v", err.Error())
-        return
-    }
+		return
+	}
 
 	if len(pmap)+2 != tprocs {
 		t.Errorf("List() FAILED: Process count error %v:%v", tprocs, len(pmap)+2)

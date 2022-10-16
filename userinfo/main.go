@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	log "github.com/golang/glog"
-	uinfo "github.com/prashant-sb/go-utils/userinfo/users"
+	uinfo "github.com/prashant-sb/go-tools/userinfo/users"
 )
 
 // CLI Flags:

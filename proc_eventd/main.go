@@ -4,7 +4,7 @@ import (
 	"flag"
 
 	log "github.com/golang/glog"
-	prc "github.com/prashant-sb/go-utils/proc_eventd/proc"
+	prc "github.com/prashant-sb/go-tools/proc_eventd/proc"
 )
 
 var (

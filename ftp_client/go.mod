@@ -1,4 +1,4 @@
-module github.com/prashant-sb/go-utils/ftp_client
+module github.com/prashant-sb/go-tools/ftp_client
 
 go 1.17
 
