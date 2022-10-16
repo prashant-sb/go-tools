@@ -2,10 +2,10 @@
 
 Following are the events that are watchable - 
 
-- PROC_EVENT_EXEC
-- PROC_EVENT_FORK
-- PROC_EVENT_EXIT
-- PROC_EVENT_ALL
+- EXEC
+- FORK
+- EXIT
+- ALL
 
 ```
 Usage of ./run:
