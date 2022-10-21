@@ -8,12 +8,14 @@ import (
 	log "github.com/golang/glog"
 )
 
+// Validate hostname format
 func IsValidName(name string) bool {
 	name = strings.Trim(name, " ")
 	re, _ := regexp.Compile(`^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$`)
 	return re.MatchString(name)
 }
 
+// Validate IPv4 or IPv6 addresses
 func IsValidIP(ipAddress string) bool {
 	ip := net.ParseIP(ipAddress)
 
